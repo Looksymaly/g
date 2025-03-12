@@ -139,7 +139,6 @@
             <h3>Obfuscated Code:</h3>
             <pre id="output">
 --//Secured by Moon V1//--
-local Ox_adf = game
             </pre>
         </div>
     </div>
@@ -150,18 +149,35 @@ local Ox_adf = game
             hljs.highlightAll();
         });
 
+        // Function to generate a random string (used for obfuscation)
+        function generateRandomName() {
+            return Math.random().toString(36).substring(2, 7); // Random string of 5 characters
+        }
+
+        // Basic Obfuscation Function
         function obfuscateCode() {
-            var luaCode = document.getElementById("luaInput").value;
-            
-            // Example of basic obfuscation logic: Prefix variables and obfuscate names
-            var obfuscatedCode = "--//Secured by Moon V1//--\n";
-            obfuscatedCode += "local Ox_adf = game\n"; // Simple obfuscation example, add more logic here
-            
+            let luaCode = document.getElementById("luaInput").value;
+
+            // Obfuscation logic: Replace variable names with random names
+            let obfuscatedCode = "--//Secured by Moon V1//--\n";
+
+            // Regex to match Lua variable/function names
+            luaCode = luaCode.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, function(match) {
+                // Skip replacing keywords and known functions like 'game'
+                if (match === "game" || match === "function" || match === "end" || match === "local") {
+                    return match;
+                }
+                // Replace variable names with random ones
+                return generateRandomName();
+            });
+
+            obfuscatedCode += luaCode;
+
             // Display the obfuscated code
             document.getElementById("output").textContent = obfuscatedCode;
-            
+
             // Highlight the syntax
-            var codeBlock = document.getElementById("output");
+            let codeBlock = document.getElementById("output");
             hljs.highlightElement(codeBlock);
         }
     </script>
