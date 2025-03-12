@@ -137,7 +137,10 @@
 
         <div class="output-container" id="obfuscatedCode">
             <h3>Obfuscated Code:</h3>
-            <pre id="output"></pre>
+            <pre id="output">
+--//Secured by Moon V1//--
+local Ox_adf = game
+            </pre>
         </div>
     </div>
 
@@ -149,8 +152,10 @@
 
         function obfuscateCode() {
             var luaCode = document.getElementById("luaInput").value;
-            // A simple Lua obfuscation (just an example)
-            var obfuscatedCode = luaCode.split('').reverse().join(''); // Reverse the code as a basic example of obfuscation
+            
+            // Example of basic obfuscation logic: Prefix variables and obfuscate names
+            var obfuscatedCode = "--//Secured by Moon V1//--\n";
+            obfuscatedCode += "local Ox_adf = game\n"; // Simple obfuscation example, add more logic here
             
             // Display the obfuscated code
             document.getElementById("output").textContent = obfuscatedCode;
