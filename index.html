@@ -154,33 +154,48 @@
             return Math.random().toString(36).substring(2, 7); // Random string of 5 characters
         }
 
-        // Basic Obfuscation Function
+        // Function to obfuscate Lua code by replacing references with new variables
         function obfuscateCode() {
             let luaCode = document.getElementById("luaInput").value;
+            let obfuscatedCode = '--//Secured by Moon V1//--\n';
 
-            // Obfuscation logic: Replace variable names with random names
-            let obfuscatedCode = "--//Secured by Moon V1//--\n";
+            // Create a map to keep track of used variable names
+            let variableMap = {};
 
-            // Regex to match Lua variable/function names
-            luaCode = luaCode.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g, function(match) {
-                // Skip replacing keywords and known functions like 'game'
-                if (match === "game" || match === "function" || match === "end" || match === "local") {
-                    return match;
-                }
-                // Replace variable names with random ones
-                return generateRandomName();
+            // Function to create new random variable names
+            function createNewVar() {
+                let newVar;
+                do {
+                    newVar = generateRandomName();
+                } while (variableMap[newVar]);
+                variableMap[newVar] = true;
+                return newVar;
+            }
+
+            // Obfuscate the 'game' and 'Players' references
+            luaCode = luaCode.replace(/\b(game)\b/g, function(match) {
+                let newVar = createNewVar();
+                return `local ${newVar} = ${match}`;
             });
 
+            luaCode = luaCode.replace(/\b(Players)\b/g, function(match) {
+                let newVar = createNewVar();
+                return `local ${newVar} = ${match}`;
+            });
+
+            // Add intermediate variables to the code to further obfuscate
+            luaCode = luaCode.replace(/\b(game|Players|Workspace|ReplicatedStorage)\b/g, function(match) {
+                let newVar = createNewVar();
+                return `local ${newVar} = ${match}`;
+            });
+
+            // Add the obfuscated code to the output section
             obfuscatedCode += luaCode;
 
-            // Display the obfuscated code
+            // Output the obfuscated code
             document.getElementById("output").textContent = obfuscatedCode;
-
-            // Highlight the syntax
-            let codeBlock = document.getElementById("output");
-            hljs.highlightElement(codeBlock);
+            hljs.highlightBlock(document.getElementById("output"));
         }
     </script>
-
 </body>
 </html>
