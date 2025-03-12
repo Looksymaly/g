@@ -3,131 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Bot</title>
+    <title>MoonSecure V1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #1f1f1f, #333);
+            color: #fff;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-        }
-        .chat-container {
-            width: 350px;
-            height: 500px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
             overflow: hidden;
+            animation: fadeIn 1s ease-in-out;
         }
-        .chat-header {
-            background: #007bff;
-            color: white;
+
+        .container {
+            background-color: #222;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 900px;
+            padding: 30px;
+            animation: slideIn 1s ease-out;
+        }
+
+        h1 {
             text-align: center;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
+            color: #f39c12;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
         }
-        .chat-box {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .message {
-            max-width: 75%;
-            margin: 5px;
-            padding: 10px;
+
+        .code-container, .output-container {
+            background-color: #2e2e2e;
+            padding: 20px;
             border-radius: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
         }
-        .bot {
-            background: #ddd;
-            align-self: flex-start;
+
+        .code-container:hover, .output-container:hover {
+            background-color: #444;
         }
-        .user {
-            background: #007bff;
-            color: white;
-            align-self: flex-end;
-        }
-        .chat-input {
-            display: flex;
-            border-top: 1px solid #ccc;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 10px;
-            border: none;
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            padding: 15px;
+            background-color: #1e1e1e;
+            color: #fff;
+            border: 2px solid #444;
+            border-radius: 8px;
             outline: none;
+            transition: all 0.3s ease;
         }
-        .chat-input button {
-            padding: 10px;
+
+        textarea:focus {
+            border-color: #f39c12;
+            background-color: #333;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #f39c12;
+            color: #fff;
             border: none;
-            background: #007bff;
-            color: white;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.3s ease;
         }
-        .chat-input button:hover {
-            background: #0056b3;
+
+        button:hover {
+            background-color: #e67e22;
+            transform: scale(1.05);
+        }
+
+        .output-container pre {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 150px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="chat-header">Support Bot</div>
-    <div class="chat-box" id="chatBox">
-        <div class="message bot">Hello! How can I assist you today?</div>
+    <div class="container">
+        <h1>MoonSecure V1</h1>
+        <div class="code-container">
+            <h3>Enter Lua Code:</h3>
+            <textarea id="luaInput" placeholder="Write Lua code here..."></textarea>
+        </div>
+
+        <button onclick="obfuscateCode()">Obfuscate Code</button>
+
+        <div class="output-container" id="obfuscatedCode">
+            <h3>Obfuscated Code:</h3>
+            <pre id="output"></pre>
+        </div>
     </div>
-    <div class="chat-input">
-        <input type="text" id="userInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-</div>
 
-<script>
-    const responses = {
-        "hello": "Hi there! How can I assist you?",
-        "how do i contact support": "You can contact support by emailing support@example.com.",
-        "what is your response time": "We usually respond within 24-48 hours.",
-        "thank you": "You're welcome! Let me know if you need anything else.",
-        "bye": "Goodbye! Have a great day!"
-    };
+    <script>
+        // Initialize syntax highlighting
+        document.addEventListener('DOMContentLoaded', (event) => {
+            hljs.highlightAll();
+        });
 
-    function sendMessage() {
-        let inputField = document.getElementById("userInput");
-        let message = inputField.value.trim().toLowerCase();
-        if (message === "") return;
-
-        displayMessage(message, "user");
-        inputField.value = "";
-
-        setTimeout(() => {
-            let response = responses[message] || "I'm sorry, I didn't understand that. Try asking something else.";
-            displayMessage(response, "bot");
-        }, 500);
-    }
-
-    function displayMessage(text, sender) {
-        let chatBox = document.getElementById("chatBox");
-        let messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", sender);
-        messageDiv.textContent = text;
-        chatBox.appendChild(messageDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function handleKeyPress(event) {
-        if (event.key === "Enter") {
-            sendMessage();
+        function obfuscateCode() {
+            var luaCode = document.getElementById("luaInput").value;
+            // A simple Lua obfuscation (just an example)
+            var obfuscatedCode = luaCode.split('').reverse().join(''); // Reverse the code as a basic example of obfuscation
+            
+            // Display the obfuscated code
+            document.getElementById("output").textContent = obfuscatedCode;
+            
+            // Highlight the syntax
+            var codeBlock = document.getElementById("output");
+            hljs.highlightElement(codeBlock);
         }
-    }
-</script>
+    </script>
 
 </body>
 </html>
