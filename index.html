@@ -173,21 +173,9 @@
             }
 
             // Obfuscate the 'game' and 'Players' references
-            luaCode = luaCode.replace(/\b(game)\b/g, function(match) {
-                let newVar = createNewVar();
-                return `local ${newVar} = ${match}`;
-            });
-
-            luaCode = luaCode.replace(/\b(Players)\b/g, function(match) {
-                let newVar = createNewVar();
-                return `local ${newVar} = ${match}`;
-            });
-
-            // Add intermediate variables to the code to further obfuscate
-            luaCode = luaCode.replace(/\b(game|Players|Workspace|ReplicatedStorage)\b/g, function(match) {
-                let newVar = createNewVar();
-                return `local ${newVar} = ${match}`;
-            });
+            luaCode = luaCode.replace(/\b(game)\b/g, () => `local ${createNewVar()} = game`);
+            luaCode = luaCode.replace(/\b(Players)\b/g, () => `local ${createNewVar()} = Players`);
+            luaCode = luaCode.replace(/\b(Workspace|ReplicatedStorage)\b/g, (match) => `local ${createNewVar()} = ${match}`);
 
             // Add the obfuscated code to the output section
             obfuscatedCode += luaCode;
