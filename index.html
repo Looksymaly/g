@@ -144,43 +144,30 @@
     </div>
 
     <script>
-        // Initialize syntax highlighting
         document.addEventListener('DOMContentLoaded', (event) => {
             hljs.highlightAll();
         });
 
-        // Function to generate a random string (used for obfuscation)
         function generateRandomName() {
-            return Math.random().toString(36).substring(2, 7); // Random string of 5 characters
+            return '_' + Math.random().toString(36).substring(2, 8);
         }
 
-        // Function to obfuscate Lua code by replacing references with new variables
         function obfuscateCode() {
             let luaCode = document.getElementById("luaInput").value;
             let obfuscatedCode = '--//Secured by Moon V1//--\n';
 
-            // Create a map to keep track of used variable names
-            let variableMap = {};
+            const replacements = {
+                'game': generateRandomName(),
+                'Players': generateRandomName(),
+                'Workspace': generateRandomName(),
+                'ReplicatedStorage': generateRandomName()
+            };
 
-            // Function to create new random variable names
-            function createNewVar() {
-                let newVar;
-                do {
-                    newVar = generateRandomName();
-                } while (variableMap[newVar]);
-                variableMap[newVar] = true;
-                return newVar;
-            }
+            luaCode = luaCode.replace(/\b(game|Players|Workspace|ReplicatedStorage)\b/g, function(match) {
+                return replacements[match];
+            });
 
-            // Obfuscate the 'game' and 'Players' references
-            luaCode = luaCode.replace(/\b(game)\b/g, () => `local ${createNewVar()} = game`);
-            luaCode = luaCode.replace(/\b(Players)\b/g, () => `local ${createNewVar()} = Players`);
-            luaCode = luaCode.replace(/\b(Workspace|ReplicatedStorage)\b/g, (match) => `local ${createNewVar()} = ${match}`);
-
-            // Add the obfuscated code to the output section
             obfuscatedCode += luaCode;
-
-            // Output the obfuscated code
             document.getElementById("output").textContent = obfuscatedCode;
             hljs.highlightBlock(document.getElementById("output"));
         }
